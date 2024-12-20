@@ -168,9 +168,7 @@
   public class TASLock {
       private AtomicBoolean state = new AtomicBoolean(false);
       public void lock() {
-          while (state.getAndSet(true)) {
-              // 自旋等待
-          }
+          while (state.getAndSet(true));               // 自旋等待
       }
       public void unlock() {
           state.set(false);
@@ -186,9 +184,7 @@
       private AtomicBoolean state = new AtomicBoolean(false);
       public void lock() {
         while (true) {
-            while (state.get()) {
-                // 自旋等待
-            }
+            while (state.get());               // 自旋等待
             if (state.getAndSet(true)) {
                 return;
             }
@@ -233,9 +229,7 @@
         public void lock() {
             Backoff backoff = new Backoff(MIN_DELAY, MAX_DELAY);
             while (true) {
-                while (state.get()) {
-                    // 自旋等待
-                }
+                while (state.get());               // 自旋等待
                 if (!state.getAndSet(true)) {
                     return;
                 }
@@ -276,9 +270,7 @@
             qnode.locked = true;
             QNode pred = tail.getAndSet(qnode);
             myPred.set(pred);
-            while (pred.locked) {
-                // 自旋等待
-            }
+            while (pred.locked);               // 自旋等待
         }
         public void unlock() {
             QNode qnode = myNode.get();
@@ -399,8 +391,7 @@ CAS操作包含三个操作数：内存位置(V)、预期原值(A)和新值(B)�
 对于删除操作，如果不涉及内存问题，就只需要操作一个指针，这就和前面的差不多了。只需要对\lstinline|head|指针的修改的时候使用CAS操作，如果\lstinline|head|未被修改则可以继续操作。
 \begin{lstlisting}
     public E deq() {
-        Node<E> oldHead;
-        Node<E> newHead;
+        Node<E> oldHead, newHead;
         do {
             oldHead = head.get();
             if (oldHead == null)
